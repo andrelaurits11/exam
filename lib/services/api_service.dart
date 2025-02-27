@@ -11,23 +11,14 @@ class ApiService {
 
     try {
       final response = await dio.get(url);
-
-      if (response.data == null || response.data["data"] == null) {
-        return 0.0;
-      }
-
+      if (response.data == null || response.data["data"] == null) return 0.0;
       var rateData = response.data["data"][target];
-
-      if (rateData == null || rateData["value"] == null) {
-        return 0.0;
-      }
-
-      return rateData["value"];
-    } on DioException {
+      return rateData != null && rateData["value"] != null ? rateData["value"] : 0.0;
+    } on DioException catch (_) {
       return 0.0;
-    } on SocketException {
+    } on SocketException catch (_) {
       return 0.0;
-    } catch (e) {
+    } catch (_) {
       return 0.0;
     }
   }

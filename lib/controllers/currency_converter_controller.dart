@@ -1,10 +1,11 @@
 import 'package:dio/dio.dart';
+import 'package:exam/models/currency_model.dart';
 
 class CurrencyConverterController {
   static const String apiKey = "cur_live_tESdvdRoDOIdPAUBv1O51bdfCUp3sUXkxytOk467";
   static const String baseUrl = "https://api.currencyapi.com/v3/latest";
 
-  Future<double> fetchExchangeRate(String base, String target) async {
+  Future<CurrencyModel> fetchExchangeRate(String base, String target) async {
     final dio = Dio();
     final url = "$baseUrl?apikey=$apiKey&base_currency=$base&currencies=$target";
 
@@ -13,13 +14,13 @@ class CurrencyConverterController {
       var rateData = response.data?["data"]?[target];
 
       if (rateData == null || rateData["value"] == null) {
-        return 0.0;
+        return CurrencyModel(baseCurrency: base, targetCurrency: target, exchangeRate: 0.0);
       }
 
-      return rateData["value"];
+      double rate = rateData["value"];
+      return CurrencyModel(baseCurrency: base, targetCurrency: target, exchangeRate: rate);
     } catch (e) {
-      return 0.0;
+      return CurrencyModel(baseCurrency: base, targetCurrency: target, exchangeRate: 0.0);
     }
   }
 }
-
