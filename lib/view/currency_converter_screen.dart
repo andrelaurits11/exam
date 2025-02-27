@@ -14,8 +14,6 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   CurrencyModel? exchangeRate;
   bool isLoading = false;
 
-  final List<String> currencies = ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "CHF", "CNY"];
-
   @override
   void initState() {
     super.initState();
@@ -89,6 +87,11 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
                       ),
                       SizedBox(height: 20),
                       Text(
+                        "1 $baseCurrency = ${exchangeRate != null ? (exchangeRate!.exchangeRate).toStringAsFixed(4) : 'N/A'} $targetCurrency",
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500, color: Colors.white),
+                      ),
+                      SizedBox(height: 10),
+                      Text(
                         "Exchange Rate: ${exchangeRate?.exchangeRate.toStringAsFixed(4) ?? 'N/A'}",
                         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.tealAccent),
                       ),
@@ -117,47 +120,40 @@ class _CurrencyConverterScreenState extends State<CurrencyConverterScreen> {
   }
 
   Widget currencyDropdown(String selectedCurrency, ValueChanged<String?> onChanged) {
-    return DropdownButton<String>(
-      dropdownColor: Color(0xFF2C2C2C),
-      value: selectedCurrency,
-      style: TextStyle(color: Colors.white, fontSize: 16),
-      iconEnabledColor: Colors.white70,
-      items: currencies.map((String currency) {
-        return DropdownMenuItem<String>(
-          value: currency,
-          child: Row(
-            children: [
-              Image.network(
-                getFlagUrl(getCountryCode(currency)),
-                width: 24,
-                height: 16,
-                errorBuilder: (_, __, ___) => Icon(Icons.flag, size: 24, color: Colors.white70),
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFF2C2C2C),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: EdgeInsets.symmetric(horizontal: 12),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          dropdownColor: Color(0xFF2C2C2C),
+          value: selectedCurrency,
+          style: TextStyle(color: Colors.white, fontSize: 16),
+          iconEnabledColor: Colors.white70,
+          borderRadius: BorderRadius.circular(12),
+          items: controller.currencies.map((String currency) {
+            return DropdownMenuItem<String>(
+              value: currency,
+              child: Row(
+                children: [
+                  Image.network(
+                    controller.currencyToFlagMap[currency] ?? "",
+                    width: 24,
+                    height: 16,
+                    errorBuilder: (_, __, ___) => Icon(Icons.flag, size: 24, color: Colors.white70),
+                  ),
+                  SizedBox(width: 8),
+                  Text(currency),
+                ],
               ),
-              SizedBox(width: 8),
-              Text(currency),
-            ],
-          ),
-        );
-      }).toList(),
-      onChanged: onChanged,
+            );
+          }).toList(),
+          onChanged: onChanged,
+        ),
+      ),
     );
   }
 
-  String getFlagUrl(String countryCode) {
-    return "https://flagcdn.com/w40/${countryCode.toLowerCase()}.png";
-  }
-
-  String getCountryCode(String currency) {
-    switch (currency) {
-      case "USD": return "us";
-      case "EUR": return "eu";
-      case "GBP": return "gb";
-      case "JPY": return "jp";
-      case "AUD": return "au";
-      case "CAD": return "ca";
-      case "CHF": return "ch";
-      case "CNY": return "cn";
-      default: return "us";
-    }
-  }
 }
